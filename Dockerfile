@@ -2,17 +2,21 @@ FROM kurron/docker-jetbrains-base:latest
 
 MAINTAINER Ron Kurr <kurr@kurron.org>
 
-LABEL org.kurron.ide.name="Apache Maven" org.kurron.ide.version=3.3.9
+LABEL org.kurron.ide.name="sdkman" org.kurron.ide.version=2.4.3
 
-ADD http://mirrors.ibiblio.org/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz /tmp/ide.tar.gz
+RUN apt-get update && \
+    apt-get install -y curl unzip && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /tmp/*
+    
+ENV SDKMAN_DIR=/opt/sdkman
+RUN curl --silent http://get.sdkman.io | bash
 
-RUN mkdir -p /opt/maven && \
-    tar zxvf /tmp/ide.tar.gz --strip-components=1 -C /opt/maven && \
-    rm /tmp/ide.tar.gz
-
-ENV M2_HOME=/opt/maven
+#source "/opt/sdkman/bin/sdkman-init.sh"
 
 USER developer:developer
 WORKDIR /home/developer
-ENTRYPOINT ["/opt/maven/bin/mvn"]
-CMD ["--version"]
+ENTRYPOINT ["source \"/opt/sdkman/bin/sdkman-init.sh\""]
+CMD ["sdk version"]
