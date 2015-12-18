@@ -12,11 +12,11 @@ RUN apt-get update && \
     rm -rf /tmp/*
     
 ENV SDKMAN_DIR=/opt/sdkman
-RUN curl --silent http://get.sdkman.io | bash
+RUN curl -s get.sdkman.io | bash && chown -R developer:developer /opt/sdkman
 
-#source "/opt/sdkman/bin/sdkman-init.sh"
+VOLUME ["/pwd"]
 
 USER developer:developer
-WORKDIR /home/developer
-ENTRYPOINT ["source \"/opt/sdkman/bin/sdkman-init.sh\""]
-CMD ["sdk version"]
+WORKDIR /pwd
+ENTRYPOINT [ "/bin/bash", "-c", "source /opt/sdkman/bin/sdkman-init.sh && sdk"]
+CMD ["version"]
